@@ -1,0 +1,3 @@
+include ':kotlinext'
+include ':app'
+rootProject.name = "AndroidKotlinExt"
