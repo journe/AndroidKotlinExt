@@ -1,6 +1,6 @@
 # AndroidKotlinExt
 
-
+[![](https://jitpack.io/v/journe/AndroidKotlinExt.svg)](https://jitpack.io/#journe/AndroidKotlinExt)
 
 ## Add library
 
@@ -18,7 +18,7 @@
 
 ```groovy
 	dependencies {
-	        implementation 'com.github.journe:AndroidKotlinExt:1.0'
+	        implementation 'com.github.journe:AndroidKotlinExt:master-SNAPSHOT'
 	}
 ```
 
