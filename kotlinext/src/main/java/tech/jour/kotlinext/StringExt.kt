@@ -81,6 +81,6 @@ fun String.formatJson(): String {
 fun java.lang.StringBuilder.addIndentBlank(indent: Int): java.lang.StringBuilder {
     for (i in 0 until indent) {
         this.append('\t')
-        return this
     }
+    return this
 }
