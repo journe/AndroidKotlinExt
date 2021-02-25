@@ -17,3 +17,70 @@ fun Long.friendlyTime(): String {
     return dateString
 //    return (days.toString() + "天" + hours + "时" + minutes + "分")
 }
+
+//将请求返回的json格式化
+fun String.httpLog(): String {
+    var message = this
+    val mMessage = StringBuffer()
+    if (message.startsWith("--> POST")) {
+        mMessage.setLength(0)
+    }
+    // 以{}或者[]形式的说明是响应结果的json数据，需要进行格式化
+    if (message.startsWith("{") && message.endsWith("}")
+        || message.startsWith("[") && message.endsWith("]")
+    ) {
+        message = message.formatJson()
+    }
+    mMessage.append(message)
+    mMessage.append("\n")
+    // 请求或者响应结束，打印整条日志
+    if (message.startsWith("<-- END HTTP")) {
+        return mMessage.toString()
+        mMessage.setLength(0)
+    }
+    return message
+}
+
+//格式化json字符串
+fun String.formatJson(): String {
+    val jsonStr = this
+    val sb = StringBuilder()
+    var last = '\u0000'
+    var current = '\u0000'
+    var indent = 0
+    for (element in jsonStr) {
+        last = current
+        current = element
+        when (current) {
+            '{', '[' -> {
+                sb.append(current)
+                sb.append('\n')
+                indent++
+                sb.addIndentBlank(indent)
+            }
+            '}', ']' -> {
+                sb.append('\n')
+                indent--
+                sb.addIndentBlank(indent)
+                sb.append(current)
+            }
+            ',' -> {
+                sb.append(current)
+                if (last != '\\') {
+                    sb.append('\n')
+                    sb.addIndentBlank(indent)
+                }
+            }
+            else -> sb.append(current)
+        }
+    }
+    return sb.toString()
+}
+
+//添加space
+fun java.lang.StringBuilder.addIndentBlank(indent: Int): java.lang.StringBuilder {
+    for (i in 0 until indent) {
+        this.append('\t')
+        return this
+    }
+}
