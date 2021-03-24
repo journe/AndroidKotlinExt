@@ -1,10 +1,15 @@
 package tech.jour.kotlinext
 
+import android.animation.Animator
+import android.animation.TimeInterpolator
+import android.animation.ValueAnimator
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.EditText
 import androidx.core.view.ViewCompat
+import androidx.viewpager2.widget.ViewPager2
 import kotlinx.coroutines.*
 import org.jetbrains.anko.dip
 import kotlin.coroutines.CoroutineContext
@@ -115,4 +120,39 @@ val View.isInvisible: Boolean
  */
 fun View.toggleVisibility() {
     visibility = if (visibility == View.GONE) View.VISIBLE else View.GONE
+}
+
+fun ViewPager2.setCurrentItem(
+    item: Int,
+    duration: Long,
+    interpolator: TimeInterpolator = AccelerateDecelerateInterpolator(),
+    pagePxWidth: Int = width // Default value taken from getWidth() from ViewPager2 view
+) {
+    val pxToDrag: Int = pagePxWidth * (item - currentItem)
+    val animator = ValueAnimator.ofInt(0, pxToDrag)
+    var previousValue = 0
+    animator.addUpdateListener { valueAnimator ->
+        val currentValue = valueAnimator.animatedValue as Int
+        val currentPxToDrag = (currentValue - previousValue).toFloat()
+        fakeDragBy(-currentPxToDrag)
+        previousValue = currentValue
+    }
+    animator.addListener(object : Animator.AnimatorListener {
+        override fun onAnimationStart(animation: Animator?) {
+            beginFakeDrag()
+        }
+
+        override fun onAnimationEnd(animation: Animator?) {
+            endFakeDrag()
+        }
+
+        override fun onAnimationCancel(animation: Animator?) { /* Ignored */
+        }
+
+        override fun onAnimationRepeat(animation: Animator?) { /* Ignored */
+        }
+    })
+    animator.interpolator = interpolator
+    animator.duration = duration
+    animator.start()
 }
